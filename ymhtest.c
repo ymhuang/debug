@@ -3,6 +3,7 @@
 void main(void)
 {
 	int i;
+        char * s = "123ABC";
 
         if ( i >= 0 && i <= 9 ) printf("aa\n");
         printf("%X\n", (char *)s[0]);
