@@ -6,10 +6,8 @@ void main(void)
 {
 	int i;
 
-	i = s[0];
-	printf("%c %d\n", i, strlen(&s[0]));
-	i = s[4];
-	printf("%c %d\n", i, strlen(&s[4]));
+        if ( i >= 0 && i <= 9 ) printf("aa\n");
+        printf("%X\n", (char *)s[0]);
 
 	return;
 }
