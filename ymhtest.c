@@ -1,7 +1,5 @@
 #include <stdio.h>
 
-char s[512] = "SMI:AOB29C01";
-
 void main(void)
 {
 	int i;
