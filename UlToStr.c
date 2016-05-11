@@ -1,4 +1,3 @@
-
 void UlToStr(CHAR16 *s, unsigned long bin, unsigned char n)
 {
     s += n;
