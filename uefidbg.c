@@ -140,14 +140,19 @@ EFI_STATUS ymhWriteLogMem( CHAR16 * s )
     UINTN i = 0;
     UINTN size = 0;
 
-    p = AllocatePool( sizeof(ymhMsgType) );
+    ymhST->BootServices->AllocatePool( EfiRuntimeServicesData, 
+            sizeof(ymhMsgType), 
+            &p );
     if ( NULL == p )
     {
         return EFI_OUT_OF_RESOURCES;
     }
+
     p->next = NULL;
     size = ymhChar16Len( s );
-    p->s = AllocatePool( sizeof(CHAR16) * size );
+    ymhST->BootServices->AllocatePool( EfiRuntimeServicesData, 
+            sizeof(CHAR16) * size, 
+            &(p->s) );
     for ( i = 0; i < size; i++ )
     {
         (p->s)[i] = s[i];
@@ -177,7 +182,8 @@ EFI_STATUS ymhDumpLogMem()
         ymhWriteLogFile( (p->s) );
         ymhMsgCurrent = p;
         p = p->next;
-        FreePool( ymhMsgCurrent );
+        ymhST->BootServices->FreePool( (ymhMsgCurrent->s) );
+        ymhST->BootServices->FreePool( ymhMsgCurrent );
     }
 
     return EFI_SUCCESS;
