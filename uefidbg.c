@@ -288,12 +288,14 @@ EFI_STATUS ymhInitLogFile(CHAR16 *s)
     status = simpFS->OpenVolume(simpFS, &root);
     if (EFI_ERROR(status))
     {
+        DEBUG((DEBUG_ERROR, "EFI_SIMPLE_FILE_SYSTEM_PROTOCOL.OpenVolume() failed: %d -> %r \n", __LINE__, status));
         return status;
     }
 
     status = root->Open(root, &ymhFileHandle, ymhLogFile, (EFI_FILE_MODE_CREATE | EFI_FILE_MODE_READ | EFI_FILE_MODE_WRITE), 0);
     if (ymhFileHandle == 0)
     {
+        DEBUG((DEBUG_ERROR, "EFI_FILE_PROTOCOL.Open() failed: %d -> %r \n", __LINE__, status));
         return EFI_ABORTED;
     }
 
@@ -308,9 +310,12 @@ EFI_STATUS ymhInitLogFile(CHAR16 *s)
     status = ymhFileHandle->GetInfo(ymhFileHandle, &ymhFileInfoGuid, &size, fileInfo);
     if ((fileInfo->FileSize) != 0)
     {
-        status = ymhFileHandle->SetPosition(ymhFileHandle, (fileInfo->FileSize + 1));
-        size = ymhChar16Len((CHAR16 *)L"\r\n");
-        ymhFileHandle->Write(ymhFileHandle, &size, (CHAR16 *)L"\r\n");
+        CHAR16 *msg = (CHAR16 *)L"\r\n\r\n***** APPENDING MESSAGES *****\r\n\r\n";
+        status = ymhFileHandle->SetPosition(ymhFileHandle, (fileInfo->FileSize));
+        size = ymhChar16Len(msg);
+        ymhChar16ToChar(c, msg, size);
+        DEBUG((DEBUG_ERROR, "%s", c));
+        ymhFileHandle->Write(ymhFileHandle, &size, msg);
     }
     else
     {
@@ -329,7 +334,6 @@ EFI_STATUS ymhInitLogFile(CHAR16 *s)
     }
 
     size = ymhChar16Len(s);
-    ymhFileHandle->Write(ymhFileHandle, &size, s);
     ymhChar16ToChar(c, s, size);
     DEBUG((DEBUG_ERROR, "%s", c));
     ymhFileHandle->Write(ymhFileHandle, &size, s);
@@ -491,6 +495,7 @@ void __cdecl ymhPort80(UINT8 num)
 #endif /* (YMH_UEFI_DBG == 1) */
 //DEBUG.ymhuang.end
 
+#if 0
 //EFI_STATUS efi_main(IN EFI_HANDLE ImageHandle, IN EFI_SYSTEM_TABLE *SystemTable) ;
 EFI_STATUS DxeEntry(IN EFI_HANDLE ImageHandle, IN EFI_SYSTEM_TABLE *SystemTable)
 {
@@ -501,3 +506,4 @@ EFI_STATUS DxeEntry(IN EFI_HANDLE ImageHandle, IN EFI_SYSTEM_TABLE *SystemTable)
     ymhTerminateLogFile((CHAR16 *)L"== END (DxeEntry)\r\n");
 #endif /* (YMH_UEFI_DBG == 1) */
 }
+#endif
